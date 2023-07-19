@@ -1,0 +1,26 @@
+Package: EMVportfolio
+Type: Package
+Title: Exploratory Mean-Variance Portfolio Optimization
+Version: 0.1.0
+Authors@R: c(person("Yuling Max", "Chen", email = "yuling.chen@uwaterloo.ca", role = c("aut", "cre"))
+Description: This package solves the Exploratory Mean-Variance (EMV) portfolio optimization problem
+    for the optimal exploratory policy. The EMV optimal policy is parameterized and learned by training 
+    a Reinforcement Learning model. Upon convergence, it will stick on to the optimal policy and make 
+    investment decisions in a naive market with one stock (risky asset) and one bond (riskfree asset).
+    This package can also make investment following the classical (non-exploratory) policy, using Maximum
+    Likelihood Estimation (MLE). Hence, we can solve the simple research question "Does the RL-based EMV 
+    optimal exploratory policy increases mean and reduces standard-deviation of the distribution of 
+    terminal wealth, compared to the MLE-based optimal classical policy?"
+License: What license is it under?
+Imports: 
+    testthat,
+    zoo
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.2.3
+Suggests: 
+    rmarkdown, 
+    knitr, 
+    devtools
+VignetteBuilder: 
+    knitr
