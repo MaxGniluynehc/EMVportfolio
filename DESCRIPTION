@@ -11,7 +11,7 @@ Description: This package solves the Exploratory Mean-Variance (EMV) portfolio o
     Likelihood Estimation (MLE). Hence, we can solve the simple research question "Does the RL-based EMV 
     optimal exploratory policy increases mean and reduces standard-deviation of the distribution of 
     terminal wealth, compared to the MLE-based optimal classical policy?"
-License: What license is it under?
+License: MIT + file LICENSE
 Imports: 
     testthat,
     zoo

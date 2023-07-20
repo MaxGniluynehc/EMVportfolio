@@ -20,17 +20,9 @@
 #' @returns A simulated path of stock prices of length `invest_hrzn/dt + mwindow_size`.
 #'
 #' @examples
-#' # Simulate 100 paths of stocks prices.
-#' for (n in 1:100){
-#'   St = simulate_stock_path(mu=mu, sigma=sig, dt=dt, invest_hrzn = 1, mwindow_size = 0)
-#'   if (n == 1){
-#'   plot(St, type = "l", ylim = c(0,2), col="gray",
-#'       ylab="Stock Price ($)", xlab = "Time (days)")
-#'   }
-#'   else{
-#'   lines(St, col="gray")
-#'   }
-#' }
+#' # Simulate 1 path of stocks prices.
+#' St = getStockPath(mu=-0.3, sigma=0.2, dt=1/252, invest_hrzn = 1, mwindow_size = 0)
+#'
 #' @export
 
 

@@ -27,10 +27,10 @@
 #'
 #' @examples
 #' # Take a non-exploratory action
-#' act_MLE_policy(x_t = 0, mu_r=0.3, sig_t=0.2)
+#' act_MLE_policy(x_t = 0, mu_t=0.3, sig_t=0.2)
 #'
 #' # Take an exploratory action
-#' act_MLE_policy(x_t = 0, mu_r=0.3, sig_t=0.2, exploratory=T, lambda=2, current_t=1/252)
+#' act_MLE_policy(x_t = 0, mu_t=0.3, sig_t=0.2, exploratory=TRUE, lambda=2, current_t=1/252)
 #' @export
 
 act_MLE_policy = function(x_t, mu_t, sig_t, rf = 0.02, x0=1, z=1.4, invest_hrzn = 1,

@@ -7,7 +7,15 @@
 \alias{TD_error}
 \title{The `act_EMV_policy` Function}
 \usage{
-act_EMV_policy(t, x, w = 1, phi1 = 1, phi2 = 0.5, lambda = 2, invest_hrzn = 1)
+act_EMV_policy(
+  t,
+  x,
+  w = 1.4,
+  phi1 = 1,
+  phi2 = 0.5,
+  lambda = 2,
+  invest_hrzn = 1
+)
 
 V_function(
   t,
@@ -24,7 +32,7 @@ TD(
   t_is,
   x_is,
   dt = 1/252,
-  w = 1,
+  w = 1.4,
   theta0 = 1,
   theta1 = 1,
   theta2 = 1,
@@ -53,6 +61,8 @@ TD_error(
 
 \item{x}{(Required, numeric) current wealth}
 
+\item{w}{(Optional, numeric) Lagrange multiplier, default to 1.4}
+
 \item{phi1}{(Optional, numeric) a parameter in the optimal EMV policy distribution, default to 1}
 
 \item{phi2}{(Optional, numeric) a parameter in the optimal EMV policy distribution, default to 0.5}
@@ -62,12 +72,19 @@ TD_error(
 \item{invest_hrzn}{(Optional, numeric) investment horizon, total length of the investment
 period in years, default to 1.}
 
-\item{theta0}{(Optional, numeric) a parameter of the optimal value function, default to 1,
-same for theta1, theta2, theta3.}
+\item{theta0}{(Optional, numeric) a parameter of the optimal value function, default to 1}
+
+\item{theta1}{(Optional, numeric) a parameter of the optimal value function, default to 1}
+
+\item{theta2}{(Optional, numeric) a parameter of the optimal value function, default to 1}
+
+\item{theta3}{(Optional, numeric) a parameter of the optimal value function, default to 1}
 
 \item{t_is}{a vector of time steps}
 
 \item{x_is}{a vector of wealth over time}
+
+\item{dt}{(Optional, numeric) the discretization of continuous time, default to 1/252,}
 }
 \value{
 The amount of money invest in stock (a numerical value of length 1).
@@ -91,6 +108,16 @@ in the bond.
 `TD_error` computes temporal difference error as \eqn{C(\theta, \phi) = \frac{1}{2} \sum_{t,x} TD(t,x)^2 \cdot dt}.
 }
 \examples{
-# Take a non-exploratory action
+# Take an exploratory action following the EMV policy
 act_EMV_policy(t = 1/252, x=1)
+
+# Compute the value function
+V_function(t = 1/252, x=1)
+
+# Compute temporal differences
+TD(t_is = c(1/252, 2/252, 3/252), x_is = c(1, 1.2, 0.8))
+
+# Compute the temporal difference error
+TD_error(t_is = c(1/252, 2/252, 3/252), x_is = c(1, 1.2, 0.8))
+
 }
