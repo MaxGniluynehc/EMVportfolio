@@ -128,7 +128,7 @@ Suppose after training the RL model, we get `trainRLalg_output`. Then we can vis
 
 ```{r echo=FALSE}
 PATH = paste0(getwd(), "/train_result_demo/")
-print(PATH)
+# print(PATH)
 params = read.csv(paste0(PATH, "params.csv"))
 TD_errors = read.csv(paste0(PATH, "TD_errors.csv"))
 trainRLalg_output = list("params"=params[,2:ncol(params)], "TD_errors"=TD_errors)
