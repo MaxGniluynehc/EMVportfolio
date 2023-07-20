@@ -18,10 +18,10 @@ bibliography: Reference.bib
 biblio-style: apalike
 reference-section-title: Bibliography
 vignette: >
-  \VignetteIndexEntry{Beginners' Handbook of the `EMVportfolio` R package}
-  \VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{Beginners' Handbook of the `EMVportfolio` R package}
+  %\VignetteEncoding{UTF-8}
   \usepackage[utf8]{inputenc}
-  \VignetteEngine{knitr::rmarkdown}
+  %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
   markdown: 
     wrap: 72 
@@ -319,7 +319,12 @@ Currently our package passes all the R CMD Checks.
 
 
 ## Testing for Invalid Inputs
-All the packages 
+All the functions in this package contain some testing functions that diagnoses invalid inputs, using the `testthat` package. The tests are designed to return informative error messages in sake of easier debugging for users. 
+
+
+
+# Still Need Help? 
+One can contact the developer via yuling dot chen at uwaterloo dot ca, for further issues when playing with the package. Happy coding! 
 
 
 
