@@ -1,0 +1,488 @@
+---
+title: "Handbook of the `EMVportfolio` R package"
+author: Yuling Max Chen
+output: 
+  html_document:
+    number_sections: true
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+    toc_depth: 3
+  pdf_document:
+    number_sections: true
+    toc: TRUE
+    toc_depth: 3
+    citation_package: natbib
+# bibliography: references.bib
+# biblio-style: apalike
+# reference-section-title: References
+vignette: >
+  %\VignetteIndexEntry{Introduction `trimFZC` R package}
+  %\VignetteEncoding{UTF-8}
+  \usepackage[utf8]{inputenc}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72 
+---
+
+```{r include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE, eval=FALSE)
+```
+
+In this document, we illustrate the main features of the `trimFZC` R package through examples. The main goal of this package is to perform analysis on trimmed mean estimate of normal distribution. 
+
+# Brief Introduction to Trimmed Mean Estimate
+
+The trimmed mean is defined as the average of observations remaining after a fixed number of outlying observations have been removed [@trimmed], which allows the estimators to be less sensitive to outliers. For example, consider a data set of 10 numbers, [4, 7, 2, 9, 6, 8, 1, 5, 3, 7], a trimmed mean estimate with a trimming percentage of 20% can be obtained via calculating the mean of the remaining data after dropping the highest and lowest 20% of the observations. 
+
+
+# Introduction to `trimFZC` R package
+
+
+## Overview
+
+The main function `getTrimMean()` computes the trimmed sample means of `N` simulations (each of size `n`) from a Normal distribution with mean `mu` and standard deviation `sigma`. We also provide plot function `plotter` to visually display various results. `tabler` function can summarize the results into a well-organized table, including bias, Empirical Variance (EmpVar) and Monte Carlo Simulation Error (MCSE). 
+
+
+The `trimFZC` package has the following architecture: 
+```{r echo=FALSE}
+PATH = "/Users/maxchen/Documents/Study/STA/STAT900/Coding/show_dir_tree"
+fs::dir_tree(path=PATH, type="any")
+```
+
+
+
+## Basic example of compute the trimmed mean
+
+### Installation
+First, install and load the R package. 
+```{r warning=FALSE, eval=FALSE, echo=TRUE}
+library(devtools)
+install_github("MaxGniluynehc/trimFZC",
+               ref="master",
+               auth_token = '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', 
+               build_vignettes = TRUE)
+library(trimFZC)
+```
+
+Now, we can directly use the `getTrimMean` function to compute the trimmed sample means from a normal distribution when doing simulations for many times. 
+
+The argument `n` indicates the sample size from the Normal distribution, `N` indicates the number of simulation times, `mu` and `sigma` respectively represent the mean and standard deviation parameters of the normal distribution, `tr` indicates the proportion of the sample is chopped off as extreme values. These five arguments are all required to specified by the users. 
+
+`random.seed` indicates the seed for random number generation. It is an optional argument, users can either specify it by numerical values or use default `random.seed = 20230615` if not specified. 
+
+The function will return a list of trimmed estimates with length `N`. 
+
+
+```{r}
+n <- 1000
+N <- 5000
+mu <- 0
+sigma <- 1
+tr <- 0.2
+seed <- 1234
+trim.mean <- getTrimMean(n = n, N = N, mu = mu, sigma = sigma, tr = tr, random.seed = seed)
+head(trim.mean)
+```
+
+
+
+## Basic examples of visualizing the efficiency of the trimmed mean estimates using `plotter`
+
+`plotter` function can help to visualize various results. The input arguments `n`, `mu`, `sigma`, `tr`, `N`, and `random.seed` are same as those in the previous `getTrimMean()` function. 
+
+Additional arguments `plot_type`, `ylim`, `add_to_plot`, `color`, `linetype`, `pchar` are included in the `plotter` function.
+
+`plot_type` is a required argument. It takes values from ["boxplot", "MCSE", "EmpVar", "EmpSE", "QQplot", "ECDF"]. Users can produce side-by-side boxplot, Monte Carlo Standard Error, and Empirical Variance plot. Also, QQ-plot and ECDF plot are available to users to compare sampling distribution between the trimmed mean and the untrimmed mean.  
+
+`ylim` is an optional argument. It can manually adjust the limit of y (vertical) axis. It takes a numeric vector of length 2 denoting the upper and lower limit of the y-axis.  
+
+`add_to_plot` is an optional argument. The default is `FALSE`. When users want to compare the Monte Carlo Standard Error, Empirical Variance, and Empirical standard error in different estimates, set it to `TRUE`, then `plotter` will draw a line on top of an existing plot. 
+
+`color`, `linetype`, `pchar` are also optional arguments. They are only applied when `add_to_plot` is set to be `TRUE`. Their default are all set to be `NULL`. `color` is used to defines the color of the line. `linetype` is used to define the type of the line. `pchar` is used to define the point character on the line.
+
+### Simple example of visualization using side-by-side boxplot
+
+Suppose we want to investigate how sample size will influence the efficiency of the trimmed mean estimates under different trimmed fractions. 
+
+It can visualize differences in efficiency of the trimmed mean estimates when sample size varies using side-by-side boxplot. 
+
+```{r}
+n <- seq(50, 1000, by=100)
+plotter("boxplot", n, mu, sigma, tr, N, seed)
+```
+
+### Simple example of visualizing Monte Carlo Simulation Error, Empirical Variance, and Empirical Standard Error
+#### Simple example of visualizing Monte Carlo Simulation Error
+If we are still interested in examining the effect of sample size, it can also help to display Monte Carlo Simulation Error (MCSE) and Empirical Variance (EmpVar) against varying sample size. 
+
+The formula of computing Monte Carlo Simulation Error (MCSE) is from @morris2019using using
+
+$$MCSE = \sqrt{\frac{{\text{Emp Var}}}{2\cdot (N - 1)}},$$
+where $\text{Emp Var}$ is the values of Empirical Variance and $N$ is the number of simulation times. 
+
+
+```{r}
+n <- seq(50, 1000, by=100)
+plotter("MCSE", n, mu, sigma, tr, N, seed)
+```
+
+To facilitate the comparison, we can also add other lines representing MCSE under different trimmed fraction on 
+this figure. 
+
+```{r}
+n <- seq(50, 1000, by=100)
+plotter("MCSE", n, mu, sigma, tr, N, seed, ylim = c(0,0.002))
+plotter("MCSE", n, mu, sigma, tr=0, N,
+        seed, add_to_plot = T, color="green", pch=2)
+plotter("MCSE", n, mu, sigma, tr=0.5, N,
+        seed, add_to_plot = T, color="pink", pch=4)
+legend("topright", legend = c( "Trimmed (0.2)", "Untrimmed", "Trimmed (0.5)"),
+       pch=c(1, 2), col = c("black", "green", "pink"), lty=c(1,2,4))
+```
+
+#### Simple example of visualizing Empirical Variance 
+
+Note that in Emp Var plot, the blue dashed line corresponds to the level of empirical variance, such that the MCSE is 2e-04.
+
+```{r}
+n <- seq(50, 1000, by=100)
+plotter("EmpVar", n, mu, sigma, tr, N, seed, ylim = c(0, 0.025))
+```
+
+It supports the comparison within one plot. 
+
+```{r}
+n <- seq(50, 1000, by=100)
+plotter("EmpVar", n, mu, sigma, tr, N, seed, ylim = c(0,0.035))
+plotter("EmpVar", n, mu, sigma, tr=0, N,
+        seed, add_to_plot = T, color="green", pch=2)
+plotter("EmpVar", n, mu, sigma, tr=0.5, N,
+        seed, add_to_plot = T, color="pink", pch=4)
+legend("topright", legend = c( "Trimmed (0.2)", "Untrimmed", "Trimmed (0.5)"),
+       pch=c(1, 2), col = c("black", "green", "pink"), lty=c(1,2,4))
+```
+
+#### Simple example of visualizing Empirical Standard Error
+
+```{r}
+n <- seq(50, 1000, by=100)
+plotter("EmpSE", n, mu, sigma, tr, N, seed)
+```
+
+It also supports the comparison within one plot. 
+
+```{r}
+n <- seq(50, 1000, by=100)
+plotter("EmpSE", n, mu, sigma, tr, N, seed, ylim = c(0,0.24))
+plotter("EmpSE", n, mu, sigma, tr=0, N,
+        seed, add_to_plot = T, color="green", pch=2)
+plotter("EmpSE", n, mu, sigma, tr=0.5, N,
+        seed, add_to_plot = T, color="pink", pch=4)
+legend("topright", legend = c( "Trimmed (0.2)", "Untrimmed", "Trimmed (0.5)"),
+       pch=c(1, 2), col = c("black", "green", "pink"), lty=c(1,2,4))
+```
+
+
+### Simple example of comparing empirical distribution using QQ-plot and ECDF
+
+It supports comparison in the empirical distribution of trimmed mean estimates using QQ-plot and empirical cumulative distribution function(ECDF). 
+
+Suppose we want to compare the empirical distribution of trimmed mean estimates with trimmed proportion 0.2, 0.5 and untrimmed ones. We can visualize this comparison using ECDF. 
+
+
+```{r}
+n <- 500
+plotter("ECDF", n, mu , sigma, tr=c(0,0.2, 0.5), N, seed)
+```
+
+QQ-plot can support pairwise comparison between two empirical distribution of trimmed estimates. 
+
+```{r}
+plotter("QQplot", n, mu , sigma , tr=c(0.2, 0), N, seed)
+```
+
+
+We can also draw QQ-plot against the theoretical quantiles.
+```{r}
+plotter("QQplot", n, mu , sigma , tr , N, seed)
+```
+
+
+
+
+
+
+
+## Basic examples of summarizing results using `tabler`
+
+`tabler` function is used to provide a table summary of results, including bias, Empirical Variance (EmpVar),Empirical Standard Error (EmpSE) and Monte Carlo Simulation Error (MCSE). Most of the input arguments, including `n`, `mu`, `sigma`, `tr`, `N`, and `random.seed` are exactly same as the previous `getTrimMean()` function. 
+
+We can use `knitr::kable` function to give you a nicer formatted output.  
+
+
+
+```{r warning=FALSE}
+tab <- tabler(n, mu, sigma, seq(0,0.5, by=0.1), random.seed=1234)
+tab
+knitr::kable(tab, "markdown", digits = 4)
+```
+# Simulation studies using `trimFZC` package
+ 
+We would like to investigate the efficiency of the trimmed mean versus the untrimmed mean when the underlying distribution is normal and there is no contamination.
+
+To do this, we need to randomly generate data from the normal distribution. Here, we vary the sample size parameter $n$ and fix $\mu = 0$, $\sigma = 1$. 
+
+We will consider sample sizes of: $5,15,50,250,500,1000$
+
+We repeat this process $N$ times. To determine N, we investigate the Monte Carlo Standard Error (MCSE) of the empirical standard errors. The MCSE is calculated by $$MCSE = \frac{\text{EmpSE}}{\sqrt{2*(N - 1)}}$$
+
+We plot the MCSE for each value of $n$ listed above using $N = 5000$
+
+```{r}
+par(mfrow=c(1,1))
+plotter("MCSE", n=c(5,15,50,250,500,1000), mu=0, sigma=1, tr=0.1, N=5000,
+        random.seed=20230619,ylim=c(0,0.006))
+plotter("MCSE", n=c(5,15,50,250,500,1000), mu=0, sigma=1, tr=0.3, N=5000,
+        random.seed=20230619, add_to_plot = T, color="purple", pch=4,ylim=c(0,0.006))
+plotter("MCSE", n=c(5,15,50,250,500,1000), mu=0, sigma=1, tr=0.5, N=5000,
+        random.seed=20230619, add_to_plot = T, color="orange", pch=4,ylim=c(0,0.006))
+legend("topright", legend = c("trimmed (0.1)", "trimmed (0.3)","trimmed (0.5)"),
+       pch=c(1, 2,4), col = c("black", "purple","orange"), lty=1)
+```
+
+From this plot we can see that the highest MCSE is below 0.006. This is an acceptable level of MCSE, and we decide to use $N=5000$. 
+
+We will now generate $N$ datasets for each value of $n$. Then on each generated data set we apply the following values of the trimming fraction: $0.1, 0.2, 0.3, 0.4, 0.5$
+
+|Parameters|  Values                    |
+|----------|:--------------------------:|
+| $n$      |  5, 15, 50, 250, 500, 1000 |
+| $\mu$    |              0             |
+| $\sigma$ |              1             |
+| tr       | 0, 0.1, 0.2, 0.3, 0.4, 0.5 |
+
+
+
+##  Results: 
+
+Lets take a look at the empirical standard error, but first recall that if $X \sim N(\mu, \sigma^2)$ then $\bar{X} \sim N(\mu, \frac{\sigma^2}{n})$. This result will be used to calculate the standard error of the untrimmed mean. 
+
+The empirical standard error: 
+
+```{r}
+n=c(5,15,50,250,500,1000)
+plotter("EmpSE", n=n, mu=0 , sigma=1 , tr=0.1, N=5000, random.seed = 20230619,ylim=c(0,0.6))
+plotter("EmpSE", n=n, mu=0, sigma=1, tr=0.3, N=5000,
+        random.seed=20230619, add_to_plot = T, color="purple", pch=2,ylim=c(0,0.6))
+plotter("EmpSE", n=n, mu=0, sigma=1, tr=0.5, N=5000,
+        random.seed=20230619, add_to_plot = T, color="orange", pch=4,,ylim=c(0,0.6))
+points(n, y=1/sqrt(n), col="green", pch=5)
+lines(n, y=1/sqrt(n), col="green", pch=5)
+legend("topright", legend = c("untrimmed", "trimmed (0.1)", "trimmed (0.3)","trimmed (0.5)"),
+       pch=c(5, 1, 2,4), col = c("green", "black", "purple","orange"), lty=1)
+```
+
+From this plot we can see that for every sample size, the trimmed mean with trimming fraction equal to $0.1$ is very comparable to the untrimmed mean in regard to empirical standard error. As the trimming fraction increases, the empirical standard error increases.
+
+We can investigate the sampling distributions of the trimmed mean estimates through boxplots:
+
+```{r}
+par(mfrow=c(1,2))
+n=c(5,15,50,250,500,1000)
+plotter("boxplot", n=n, mu=0, sigma=1, tr=0.1, N=5000,
+        random.seed=20230619, ylim=c(-2, 2))
+plotter("boxplot", n=n, mu=0, sigma=1, tr=0.5, N=5000,
+        random.seed=20230619, ylim=c(-2, 2))
+```
+
+From this we can see that the variability for each $n$ is larger for a trimming fraction of $0.5$ compared to $0.1$. It is difficult to compare $n=250,500,1000$, so we will plot these alone and investigate further.
+```{r}
+par(mfrow=c(1,2))
+n=c(250,500,1000)
+plotter("boxplot", n=n, mu=0, sigma=1, tr=0.1, N=5000,
+        random.seed=20230619, ylim=c(-0.3, 0.3))
+plotter("boxplot", n=n, mu=0, sigma=1, tr=0.5, N=5000,
+        random.seed=20230619, ylim=c(-0.3, 0.3))
+```
+
+From this plot, it is easier to tell that the trimming fraction of $0.5$ has larger variability than the trimming fraction of $0.1$.
+
+We also compare the distributions through their empirical distribution functions (ECDF). Here, we plot the ECDF's for each trimming fraction when $n=15$. The purple curve represents the cumulative distribution function for the sample mean.
+```{r}
+plotter("ECDF", n=15, mu=0 , sigma=1 , tr=c(0.1,0.3,0.5), N=5000, random.seed = 20230619)
+lines(seq(-2,2,by=0.01), pnorm(seq(-2,2,by=0.01),0,1/sqrt(15)), col="purple",type="l",lwd=2)
+```
+
+Here, we can see that a trimming fraction of $0.5$ has the least steep slope, indicating that there is more variability. This is consistent with the other plots we have examined. 
+
+The last plot we will look at is a QQ-plot to compare the sampling distributions of the trimmed mean to the theoretical quantiles of the distribution of the sample mean. First, lets look at a QQ-plot when $n=15$
+
+```{r fig.dim=c(9, 5)}
+par(mfrow=c(1,2), mai=c(1, 1, 0.7, 0.8))
+plotter("QQplot", n=15, mu=0 , sigma=1 , tr=0.1 , N=5000, random.seed = 20230619)
+plotter("QQplot", n=15, mu=0 , sigma=1 , tr=0.5 , N=5000, random.seed = 20230619)
+```
+
+Again, with $n=1000$
+
+```{r fig.dim=c(9, 5)}
+par(mfrow=c(1,2), mai=c(1, 1, 0.7, 0.8))
+plotter("QQplot", n=1000, mu=0 , sigma=1 , tr=0.1 , N=5000, random.seed = 20230619)
+plotter("QQplot", n=1000, mu=0 , sigma=1 , tr=0.5 , N=5000, random.seed = 20230619)
+```
+
+When $n=15$, the sampling distribution for both trim fractions ($0.1,0.5$) deviate from the distribution of the sample mean. When $n=1000$, the sampling distribution of the trim fraction $0.1$ closely resembles the distribution of the sample mean. The trim fraction $0.5$ also follows quite closely, with some slight deviation in the tails. 
+
+Finally, we present the results of the study in tabular form
+
+```{r}
+tab = tabler(n=5, mu=0, sigma=1, tr=c(0.1,0.2,0.3,0.4,0.5), random.seed = 20230619)
+knitr::kable(tab)
+tab = tabler(n=15, mu=0, sigma=1, tr=c(0.1,0.2,0.3,0.4,0.5), random.seed = 20230619)
+knitr::kable(tab)
+tab = tabler(n=50, mu=0, sigma=1, tr=c(0.1,0.2,0.3,0.4,0.5), random.seed = 20230619)
+knitr::kable(tab)
+tab = tabler(n=250, mu=0, sigma=1, tr=c(0.1,0.2,0.3,0.4,0.5), random.seed = 20230619)
+knitr::kable(tab)
+tab = tabler(n=500, mu=0, sigma=1, tr=c(0.1,0.2,0.3,0.4,0.5), random.seed = 20230619)
+knitr::kable(tab)
+tab = tabler(n=1000, mu=0, sigma=1, tr=c(0.1,0.2,0.3,0.4,0.5), random.seed = 20230619)
+knitr::kable(tab)
+```
+
+We can see from the results in the table, the empirical standard error increases as the trimming fraction increases for each n. This increase is smaller in the case of $n=1000$.
+
+
+
+
+<!-- ===================== Testings ========================= -->
+
+```{r include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+```
+
+# Package Testings
+
+## R CMD Checks
+As a general checking of the correct design and structure of this package, it is recommended to do conduct a R CMD Check, which can be simply done via the `check()` function in `devtools` package, i.e.,  `devtools::check()`. 
+
+Currently our package passes all the R CMD Checks. 
+
+
+## Testing for Invalid Inputs
+
+While the package is correctly setup, we considerately wrote some within-function tests that diagnose invalid inputs, using the `testthat` package. The tests are designed to return informative error messages in sake of easier debugging for users. 
+
+### Testing `getTrimMean()`
+The input parameters `(n, mu, sigma, tr, N)` all have to take numerical values, otherwise... 
+```{r error=TRUE}
+library(trimFZC)
+try(getTrimMean(n="10", N=5, mu=0, sigma=1, tr=0.1, random.seed = 1234))
+```
+
+The input parameters `(n, mu, sigma, tr, N)` all have to take singular numerical value, so inputting vectors will cause error: 
+```{r error=TRUE}
+try(getTrimMean(n=10, N=5, mu=0, sigma=c(0.5, 1, 2), tr=0.1, random.seed = 1234))
+```
+
+The input parameters `(n, N, sigma)` cannot take 0 or negative number, otherwise... 
+```{r error=TRUE}
+try(getTrimMean(n=10, N=-1, mu=0, sigma=1, tr=0.1, random.seed = 1234))
+try(getTrimMean(n=10, N=5, mu=0, sigma=1, tr=-2, random.seed = 1234))
+```
+
+
+The input parameter `(tr)` can take 0 but cannot take negative values: 
+```{r error=TRUE}
+try(getTrimMean(n=10, N=5, mu=0, sigma=1, tr=0, random.seed = 1234))
+try(getTrimMean(n=10, N=5, mu=0, sigma=1, tr=-2, random.seed = 1234))
+```
+
+The input parameters `(n, N)` have to take integers: 
+```{r error=TRUE}
+try(getTrimMean(n=10, N=5.5, mu=0, sigma=1, tr=0, random.seed = 1234))
+```
+
+
+### Testing `plotter()`
+
+The input argument `plot_type` can only take value from the list: `['boxplot', 'MCSE', 'EmpVar', 'EmpSE', 'QQplot', 'ECDF']`, otherwise...
+```{r error = TRUE}
+try(plotter("trimFZC", n=100, N=500, mu=0, sigma=1, tr=seq(0, 0.5, by=0.1), random.seed = 1234))
+```
+
+
+All of the input parameters `(n, N, mu, sigma, tr)` have to take numerical values: 
+```{r error = TRUE}
+try(plotter("boxplot", n=100, N=500, mu=c(0, 1, "mu"), sigma=1, tr=seq(0, 0.5, by=0.1), random.seed = 1234))
+```
+
+None of the input parameters `(n, mu, sigma, tr)` can take `NULL` or empty value. 
+```{r error = TRUE}
+try(plotter("boxplot", n=numeric(), N=500, mu=0, sigma=1, tr=seq(0, 0.5, by=0.1), random.seed = 1234))
+```
+
+
+And since we only allow one parameter to vary each time (holding all other parameters fixed), exactly one of the input parameters `(n, mu, sigma, tr)` has to take a numeric vector of length greater than 1. And the other parameters have to take singular numerical values. 
+```{r error = TRUE}
+try(plotter("boxplot", n=100, N=500, mu=c(0, 1), sigma=1, tr=seq(0, 0.5, by=0.1), random.seed = 1234))
+try(plotter("ECDF", n=100, N=c(500, 3000), mu=0, sigma=1, tr=c(0, 0.1, 0.2, 0.3), random.seed = 1234))
+```
+
+In particular, when we are generating QQplot, this is a pairwise comparison of the distribution of trimmed mean estimates. So, at most one of the `(n, mu, sigma, tr)` can take a vector of length no greater than 2. When all of `(n, mu, sigma, tr)` are singular numerical inputs, we are comparing one sample of trimmed mean estimates with its theoretical distribution. 
+
+```{r error = TRUE}
+try(plotter("QQplot", n=100, N=500, mu=0, sigma=1, tr=c(0, 0.5, 0.4), random.seed = 1234))
+```
+
+When we are generating line plots (e.g., MCSE, EmpVar, EmpSE), we can draw a line on an existing plot by setting `add_to_plot = TRUE`. But if there is no existing plot, 
+
+```{r error = TRUE}
+try(plotter("EmpVar", n=100, N=500, mu=0, sigma=seq(1,10, by=1), tr=0.3, random.seed = 1234,
+    add_to_plot = T, color="green", pch=2))
+```
+
+Also, the argument `add_to_plot` has to take logical inputs: 
+```{r error = TRUE}
+try(plotter("EmpVar", n=100, N=500, mu=0, sigma=seq(1,10, by=1), tr=0.3, random.seed = 1234,
+    add_to_plot = 123, color="green", pch=2))
+```
+
+Lastly, `plotter()` also has arguments `ylim, color, linetype, pchar`, which respectively correspond to `ylim, col, lty, pch` arguments in the basic `graphics::plot()` function in R. So, we did not write tests in `plotter()` for them, as they already exist. For example, `ylim` can only take a numeric vector of length 2: 
+
+```{r error=TRUE, fig.show='hide', results='markup', message=TRUE, warning=TRUE, include=TRUE}
+try(plotter("EmpVar", n=100, N=500, mu=0, sigma=seq(1,10, by=1), tr=0.3, random.seed = 1234, ylim=c(1,2,3)))
+```
+
+
+
+### Testing `tabler()`
+
+When creating the tabularized results, we don't allow the parameter `N` to vary anymore, as this should be fixed at the beginning of the analysis. 
+```{r error=TRUE}
+try(tabler(n=100, mu=0, sigma=1, tr=0.1, N=c(500, 510), random.seed = 1234))
+```
+
+For simplicity of the table, we only allow one paramter to vary at a time, fixing all other parmeters fixed as constant. So, at most one of `(n, mu, sigma, tr)` can a a vector of length greater than 1.
+```{r error=TRUE}
+try(tabler(n=100, mu=0, sigma=c(0.5, 1, 2), tr=seq(0, 0.5, by=0.1), N=500, random.seed = 1234))
+```
+
+When one parameter take a vector of length greater than 20, we return a warning message as too many rows can cause the table messy. 
+```{r error=TRUE,results='hide', warning=TRUE, message=TRUE, include=TRUE}
+try(tabler(n=100, mu=0, sigma=1, tr=seq(0, 0.5, by = 0.005), N=500, random.seed = 1234))
+```
+
+
+
+
+
+
+
+
+
+
+
