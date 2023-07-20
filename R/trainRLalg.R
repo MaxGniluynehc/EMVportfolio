@@ -190,7 +190,7 @@ trainRLalg = function(N_train=10000, w_step = 20, random.seed=1234, alpha=0.05,
 #'
 #' @param (Optional, numeric) trainRLalg_output an output object from the `trainRLalg` function, if NULL is given,
 #' it will trigger the `trainRLalg` function and train the RL model.
-#' @type (Required, string) specifies the training result to show, can take value from ("TD_errors", "params", "thetas", "phis")
+#' @param type (Required, string) specifies the training result to show, can take value from ("TD_errors", "params", "thetas", "phis")
 
 plot_trainResult = function(trainRLalg_output, type, ...){
   if (is.null(trainRLalg_output)){

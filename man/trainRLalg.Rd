@@ -83,6 +83,8 @@ representing daily discretization. If set to 1/12, then this is monthly discreti
 \item{invest_hrzn}{(Optional, numeric) investment horizon, total length of the investment
 period in years, default to 1.}
 
+\item{type}{(Required, string) specifies the training result to show, can take value from ("TD_errors", "params", "thetas", "phis")}
+
 \item{(Optional, }{numeric) trainRLalg_output an output object from the `trainRLalg` function, if NULL is given,
 it will trigger the `trainRLalg` function and train the RL model.}
 }
