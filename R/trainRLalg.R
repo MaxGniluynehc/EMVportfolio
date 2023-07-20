@@ -35,6 +35,21 @@
 #' @param invest_hrzn (Optional, numeric) investment horizon, total length of the investment
 #' period in years, default to 1.
 #'
+#'
+#' @returns A named list containing:
+#' \itemize{
+#'  \item{"params": }{a `N_train`-by-7 matrix containing the training paths of all the parameters
+#'  (`theta_0`, `theta_1`, `theta_2`, `theta_3`, `phi1`, `phi2`, `w`)}
+#'  \item{"wealth_paths": }{`N_train` paths of the portfolio wealth over the investment period}
+#'  \item{"terminal_wealths": }{a vector of length `N_train` containing the terminal wealths of all the wealth paths}
+#'  \item{"investment_paths": }{`N_train` paths of the investment decisions over the investment period}
+#'  \item{"TD_errors": }{a vector of length `N_train` containing the TD errors over the training epochs}
+#'  \item{"dC_dtheta1s": }{a vector of length `N_train` containing the gradient of TD error, computed for updating theta1}
+#'  \item{"dC_dtheta2s": }{a vector of length `N_train` containing the gradient of TD error, computed for updating theta2}
+#'  \item{"dC_dphi1s": }{a vector of length `N_train` containing the gradient of TD error, computed for updating phi1}
+#'  \item{"dC_dphi2s": }{a vector of length `N_train` containing the gradient of TD error, computed for updating phi2}
+#' }
+#'
 #' @export
 
 trainRLalg = function(N_train=10000, w_step = 20, random.seed=1234, alpha=0.05,

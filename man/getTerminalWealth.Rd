@@ -55,8 +55,12 @@ is constrained so that abs(investment) <= `max_invest`}
 is constrained so that abs(investment) <= max_invest}
 }
 \value{
-A named list containing the wealth path ("wealth"), the investment path ("control"), and the
-terminal wealth ("terminal_wealth").
+A named list containing:
+\itemize{
+ \item{"wealth": }{the path of wealth over the investment period, a vector of length `invest_hrzn`/`dt`}
+ \item{"controls": }{the path of investmen decisions over the investment period, a vector of length `invest_hrzn`/`dt` - 1}
+ \item{"terminal_wealth": }{the wealth at the end of the investment period, i.e., the last value of `wealth`}
+}
 }
 \description{
 Given a path of stock price, make investment over time following either the Exploratory
