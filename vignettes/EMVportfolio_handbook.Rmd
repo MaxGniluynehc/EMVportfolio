@@ -1,5 +1,5 @@
 ---
-title: "Handbook of the `EMVportfolio` R package"
+title: "Beginners' Handbook of the `EMVportfolio` R package"
 author: Yuling Max Chen
 output: 
   html_document:
@@ -14,9 +14,9 @@ output:
     toc: TRUE
     toc_depth: 3
     citation_package: natbib
-# bibliography: references.bib
-# biblio-style: apalike
-# reference-section-title: References
+bibliography: Reference.bib
+biblio-style: apalike
+reference-section-title: Bibliography
 vignette: >
   %\VignetteIndexEntry{Introduction `trimFZC` R package}
   %\VignetteEncoding{UTF-8}
@@ -31,62 +31,91 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE, cache = TRUE, eval=FALSE)
 ```
 
-In this document, we illustrate the main features of the `trimFZC` R package through examples. The main goal of this package is to perform analysis on trimmed mean estimate of normal distribution. 
-
-# Brief Introduction to Trimmed Mean Estimate
-
-The trimmed mean is defined as the average of observations remaining after a fixed number of outlying observations have been removed [@trimmed], which allows the estimators to be less sensitive to outliers. For example, consider a data set of 10 numbers, [4, 7, 2, 9, 6, 8, 1, 5, 3, 7], a trimmed mean estimate with a trimming percentage of 20% can be obtained via calculating the mean of the remaining data after dropping the highest and lowest 20% of the observations. 
+The `EMVportfolio` package is designed to solve for the Exploratory Mean-Variance (EMV) portfolio optimization problem, as described in [@wang2020continuous]. In this document, we illustrate the main features of this R package with examples. 
 
 
-# Introduction to `trimFZC` R package
+# Background Information
+Exploratory Mean-Variance (EMV) portfolio optimization problem [@wang2020continuous] is an investment problem, that aims to maximize the expected portfolio value (wealth) while bearing the minimal risk (variance). According to [@wang2020continuous], the EMV problem is formulated under a Reinforcement Learning (RL) framework, and the optimal exploratory policy follows a Gaussian distribution, from which we can sample the investment decisions (i.e., the dollar value invested in the stock). By parameterizing the mean $\mu$ and standard-deviation $\sigma$ of the Gaussian policy distribution, [@wang2020continuous] constructs a RL training loss, named as the Temporal Difference (TD) error. And the Gaussian policy distribution can be optimized by iteratively updating the parameters and minimizing the TD error. 
+
+For comparison purpose, [@wang2020continuous] also introduced the classical (non-exploratory) Mean-Variance (MV) portfolio optimization problem, which can be solved via Maximum Likelihood Estimation (MLE). 
+
+For more details of the EMV problem, please refer to [@wang2020continuous]. 
 
 
-## Overview
+# Installation
 
-The main function `getTrimMean()` computes the trimmed sample means of `N` simulations (each of size `n`) from a Normal distribution with mean `mu` and standard deviation `sigma`. We also provide plot function `plotter` to visually display various results. `tabler` function can summarize the results into a well-organized table, including bias, Empirical Variance (EmpVar) and Monte Carlo Simulation Error (MCSE). 
+One can download the latest version of this package from github: 
+```{r echo=TRUE, eval=FALSE}
+require(devtools)
+devtools::install_github("MaxGniluynehc/EMVportfolio",
+               ref="main",
+               auth_token = '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',
+               build_vignettes = TRUE)
+library(EMVportfolio)
+```
 
 
-The `trimFZC` package has the following architecture: 
-```{r echo=FALSE}
-PATH = "/Users/maxchen/Documents/Study/STA/STAT900/Coding/show_dir_tree"
+# Overview 
+
+The `EMVportfolio` package has the following architecture: 
+
+```{r echo=FALSE, eval=FALSE, include=FALSE}
+PATH = "/Users/maxchen/Documents/Study/STA/STAT900/Writings/Final Project/showdir"
 fs::dir_tree(path=PATH, type="any")
 ```
 
-
-
-## Basic example of compute the trimmed mean
-
-### Installation
-First, install and load the R package. 
-```{r warning=FALSE, eval=FALSE, echo=TRUE}
-library(devtools)
-install_github("MaxGniluynehc/trimFZC",
-               ref="master",
-               auth_token = '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', 
-               build_vignettes = TRUE)
-library(trimFZC)
-```
-
-Now, we can directly use the `getTrimMean` function to compute the trimmed sample means from a normal distribution when doing simulations for many times. 
-
-The argument `n` indicates the sample size from the Normal distribution, `N` indicates the number of simulation times, `mu` and `sigma` respectively represent the mean and standard deviation parameters of the normal distribution, `tr` indicates the proportion of the sample is chopped off as extreme values. These five arguments are all required to specified by the users. 
-
-`random.seed` indicates the seed for random number generation. It is an optional argument, users can either specify it by numerical values or use default `random.seed = 20230615` if not specified. 
-
-The function will return a list of trimmed estimates with length `N`. 
-
-
 ```{r}
-n <- 1000
-N <- 5000
-mu <- 0
-sigma <- 1
-tr <- 0.2
-seed <- 1234
-trim.mean <- getTrimMean(n = n, N = N, mu = mu, sigma = sigma, tr = tr, random.seed = seed)
-head(trim.mean)
+# └── R
+#     ├── act_EMV_policy.R
+#     ├── act_MLE_policy.R
+#     ├── getStockPath.R
+#     ├── getTerminalWealth.R
+#     ├── show_terminalwealth.R
+#     └── trainRLalg.R
 ```
 
+* The `act_EMV_policy.R` and `act_MLE_policy.R` contains functions that computes the investment decision/action (i.e., dollar value invested in the stock), following either the classical policy with MLE, or the exploratory EMV policy under the RL framework. 
+* The `getStockPath.R` simulates a path of stock price process. 
+* The `getTerminalWealth.R` trades based on a given policy and computes the terminal wealth, i.e., the portfolio value at the end of the investment period. 
+* The `show_terminalwealth.R` visualizes the simulations of terminal wealth with plots and tables.  
+* The `trainRLalg.R` optimizes the exploratory policy by training a parameterized RL model and minimizing the TD error. It also contains plotting functions to illustrate the convergence of the training process. 
+
+
+
+# Examples
+
+## Simulating Stock Price Paths
+
+One can easily simulate stock price paths by: 
+```{r}
+set.seed(1234)
+N_sim = 100
+for (i in 1:N_sim){
+  St= getStockPath(-0.3, 0.2, mwindow_size = 0)
+  if (i==1){
+    par(mai=c(1.02,1,0.4,0.3))
+    plot(St, col="gray", type="l", ylim = c(0.3,1.5),
+         ylab="Stock Price ($)", xlab = "Time (days)",
+         cex.lab=1.5)
+  }
+  else{
+    lines(St, col="gray")
+  }
+}
+```
+
+
+## Training the RL Model
+
+Training the RL model is simply one line of code, with all other arguments taking their default values: 
+```{r eval=FALSE}
+Out = trainRLalg(N_train = 5000)
+```
+
+ 
+
+
+## 
 
 
 ## Basic examples of visualizing the efficiency of the trimmed mean estimates using `plotter`
