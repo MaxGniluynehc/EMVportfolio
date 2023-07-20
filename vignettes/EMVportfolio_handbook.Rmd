@@ -49,7 +49,7 @@ One can download the latest version of this package from github:
 require(devtools)
 devtools::install_github("MaxGniluynehc/EMVportfolio",
                ref="main",
-               auth_token = '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',
+               auth_token = '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',
                build_vignettes = TRUE)
 library(EMVportfolio)
 library(zoo)
