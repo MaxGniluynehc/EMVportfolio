@@ -70,9 +70,10 @@ end of the investment period.
 }
 \examples{
 # First get a stock path
-St = simulate_stock_path(mu=-0.3, sigma=0.2, dt=1/252, invest_hrzn = 1, mwindow_size = 0)
+St = getStockPath(mu=-0.3, sigma=0.2, dt=1/252, invest_hrzn = 1, mwindow_size = 0)
 
 # Then, trade following the MLE classic policy and compute the terminal wealth
+library(zoo)
 getTerminalWealth(St)
 
 }

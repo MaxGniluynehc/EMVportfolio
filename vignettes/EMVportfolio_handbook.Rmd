@@ -45,7 +45,7 @@ For more details of the EMV problem, please refer to [@wang2020continuous].
 # Installation
 
 One can download the latest version of this package from github: 
-```{r message=FALSE}
+```{r eval=FALSE, message=FALSE}
 require(devtools)
 devtools::install_github("MaxGniluynehc/EMVportfolio",
                ref="main",
