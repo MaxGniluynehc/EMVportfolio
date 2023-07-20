@@ -15,6 +15,7 @@ License: MIT + file LICENSE
 Imports: 
     testthat,
     zoo
+Dependency: R >= 3.5.0
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3

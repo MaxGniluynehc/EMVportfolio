@@ -18,10 +18,10 @@ bibliography: Reference.bib
 biblio-style: apalike
 reference-section-title: Bibliography
 vignette: >
-  %\VignetteIndexEntry{Introduction `trimFZC` R package}
-  %\VignetteEncoding{UTF-8}
+  \VignetteIndexEntry{Beginners' Handbook of the `EMVportfolio` R package}
+  \VignetteEncoding{UTF-8}
   \usepackage[utf8]{inputenc}
-  %\VignetteEngine{knitr::rmarkdown}
+  \VignetteEngine{knitr::rmarkdown}
 editor_options: 
   markdown: 
     wrap: 72 
