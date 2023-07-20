@@ -2,7 +2,7 @@ Package: EMVportfolio
 Type: Package
 Title: Exploratory Mean-Variance Portfolio Optimization
 Version: 0.1.0
-Authors@R: c(person("Yuling Max", "Chen", email = "yuling.chen@uwaterloo.ca", role = c("aut", "cre"))
+Authors@R: c(person("Yuling Max", "Chen", email = "yuling.chen@uwaterloo.ca", role = c("aut", "cre")))
 Description: This package solves the Exploratory Mean-Variance (EMV) portfolio optimization problem
     for the optimal exploratory policy. The EMV optimal policy is parameterized and learned by training 
     a Reinforcement Learning model. Upon convergence, it will stick on to the optimal policy and make 
