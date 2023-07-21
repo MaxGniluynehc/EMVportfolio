@@ -13,9 +13,7 @@ All the functions of this package are written in R and stored in folder [R](http
 ## Installation 
 To install this package, run the following in R: 
 ```{r}
-devtools::install_github("MaxGniluynehc/EMVportfolio",
-               ref="main",
-               build_vignettes = TRUE, force = TRUE)
+devtools::install_github("MaxGniluynehc/EMVportfolio", ref="main", build_vignettes = TRUE, force = TRUE)
 ```
 
 For more concrete examples and instructions of using this package, please refer to the vignette by running `vignette("EMVporfolio-handbook")` after installation.  
