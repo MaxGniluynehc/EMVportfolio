@@ -1,5 +1,7 @@
 #' @title Illustration of Terminal Wealth
 #' @name show_terminalwealth
+#' @aliases plot_terminalwealth
+#' @aliases table_terminalwealth
 #'
 #' @rdname show_terminalwealth
 #' @description
@@ -18,8 +20,8 @@ plot_terminalwealth = function(terminal_wealth, plot_type, ...){
     boxplot(terminal_wealth, ...)
   }
   else if(plot_type == "density"){
-    if (ncol(terminal_wealth) > 1){
-      plot(density(terminal_wealth[,1]), main="", col=1,
+    if (!is.null(ncol(terminal_wealth)) & ncol(terminal_wealth) > 1){
+      plot(density(terminal_wealth[,1], ...), main="", col=1,
            ylab="Density of terminal wealth",
            xlab = "Terminal wealth", ...)
       for (i in 2:ncol(terminal_wealth)){
@@ -29,7 +31,7 @@ plot_terminalwealth = function(terminal_wealth, plot_type, ...){
              legend=colnames(terminal_wealth))
     }
     else{
-      plot(density(terminal_wealth), main="",
+      plot(density(terminal_wealth, ...), main="",
          ylab="Density of terminal wealth",
          xlab = "Terminal wealth", ...)
       }

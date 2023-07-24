@@ -27,6 +27,7 @@ trainRLalg(
   S0 = 1,
   dt = 1/252,
   rf = 0.02,
+  x0 = 1,
   invest_hrzn = 1
 )
 
@@ -79,6 +80,8 @@ automatically computed as \eqn{\theta_3 = 2\phi_2} in the function}
 representing daily discretization. If set to 1/12, then this is monthly discretization.}
 
 \item{rf}{(Optional, numeric) riskfree interest rate, default to 0.02}
+
+\item{x0}{(Optional, numeric) inital wealth, default to 1}
 
 \item{invest_hrzn}{(Optional, numeric) investment horizon, total length of the investment
 period in years, default to 1.}

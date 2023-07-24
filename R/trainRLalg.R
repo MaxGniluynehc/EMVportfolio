@@ -32,6 +32,7 @@
 #' @param dt (Optional, numeric) the discretization of continuous time, default to 1/252,
 #' representing daily discretization. If set to 1/12, then this is monthly discretization.
 #' @param rf (Optional, numeric) riskfree interest rate, default to 0.02
+#' @param x0 (Optional, numeric) inital wealth, default to 1
 #' @param invest_hrzn (Optional, numeric) investment horizon, total length of the investment
 #' period in years, default to 1.
 #'
@@ -55,7 +56,7 @@
 trainRLalg = function(N_train=10000, w_step = 20, random.seed=1234, alpha=0.05,
                       lr_theta=0.0005, lr_phi=0.0005, lambda = 2, clip_gradient=10,
                       theta0=NULL, theta1=0, theta2=-2, theta3=NULL, phi1=0, phi2=0.01, w=1.4, z=1.4,
-                      mu=-0.3, sigma=0.2, S0=1, dt=1/252, rf=0.02, invest_hrzn = 1
+                      mu=-0.3, sigma=0.2, S0=1, dt=1/252, rf=0.02, x0=1, invest_hrzn = 1
                       ){
 
   if (any(is.null(theta0), is.null(theta3))){

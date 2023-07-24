@@ -1,1 +1,6 @@
 exportPattern("^[[:alpha:]]+")
+
+importFrom("graphics", "abline", "boxplot", "legend", "lines")
+importFrom("stats", "density", "ecdf", "qqplot", "quantile", "rnorm",
+          "var")
+importFrom("zoo", "rollmean", "rollapply")
